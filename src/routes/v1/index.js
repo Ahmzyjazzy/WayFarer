@@ -3,6 +3,7 @@
 
 import User from './controllers/User';
 import Trip from './controllers/Trip';
+import Booking from './controllers/Booking';
 
 export default (app) => {
 
@@ -18,6 +19,10 @@ export default (app) => {
         .post(Trip.create)
         .get(Trip.getAll)
 
+    // Booking route
+    app.route('/api/v1/bookings', checkToken)
+        .post(Booking.create)
+        .get(Booking.getAll)
 
 
     

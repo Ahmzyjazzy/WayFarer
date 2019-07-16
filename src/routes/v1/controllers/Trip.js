@@ -12,7 +12,7 @@ const Trip = {
      * @returns {object} trip object 
      */
     async create(req, res) {
-        const { token, bus_id, origin, destination, trip_date, fare } = req.body;
+        const { bus_id, origin, destination, trip_date, fare } = req.body;
         
         // check to see if request contain token
         if (!req.token) {
