@@ -30,8 +30,26 @@ const Trip = {
             })
         }
 
+        //check if bus has been assigned to an active trip
+        try{
+            const text = `SELECT bus_id FROM Trip WHERE bus_id = $1 AND status = 'Active'`;
+            const { rows } = await db.query(text, [bus_id]);
+            if (rows[0]) {
+                return res.status(400).send({
+                    status: 'error',
+                    error: 'This Bus has already been assigned to an active trip'
+                });
+            }
+        }catch(error){
+            console.log(error);
+            return res.status(400).send({ 
+                status: 'error',
+                error: 'An error occurred, please try again!',
+            });
+        }
+
         const createQuery = `INSERT INTO
-        Trip (bus_id, origin, destination, trip_date, fare, created_on)
+        Trip (bus_id, origin, destination, trip_date, fare, status)
         VALUES ($1, $2, $3, $4, $5, $6);`;
         const values = [
             bus_id,
@@ -39,12 +57,12 @@ const Trip = {
             destination,
             trip_date,
             fare,
-            moment(new Date())
+            status: 'Active'
         ];
 
         try {
             const { rows } = await db.query(createQuery, values);            
-            const { id, bus_id, origin, destination, trip_date, fare } = rows[0];
+            const { id, bus_id, origin, destination, trip_date, fare, status } = rows[0];
             return res.status(201).send({ 
                 status: 'success',
                 data: { 
@@ -53,15 +71,15 @@ const Trip = {
                     origin, 
                     destination, 
                     trip_date, 
-                    fare
+                    fare,
+                    status
                 }
              });
         } catch(error) {
             console.log(error);
             return res.status(400).send({ 
                 status: 'error',
-                error,
-                hashPassword
+                error: 'An error occurred, please try again!',
             });
         }
     },
@@ -92,12 +110,6 @@ const Trip = {
         const text = 'SELECT * FROM Trip';
         try {
             const { rows } = await db.query(text);
-            if (!rows.length) {
-                return res.status(200).send({
-                    status: 'success',
-                    error: 'No record found'
-                });
-            }            
             return res.status(200).send({ 
                 status: 'success',
                 data: rows
@@ -106,7 +118,7 @@ const Trip = {
             console.log(error);
             return res.status(400).send({
                 status: 'error',
-                error
+                error: 'An error occurred, please try again!'
             })
         }
     }

@@ -64,8 +64,7 @@ const User = {
             }
             return res.status(400).send({ 
                 status: 'error',
-                error,
-                hashPassword
+                error: 'An error occurred, please try again!'
             });
         }
     },
@@ -104,7 +103,7 @@ const User = {
             if(!Helper.comparePassword(rows[0].password, password)) {
                 return res.status(400).send({ 
                     status: 'error',
-                    error: 'The credentials you provided is incorrect' 
+                    error: 'The credentials you provided is incorrect'
                 });
             }
             const token = Helper.generateToken(rows[0].id);
@@ -121,7 +120,7 @@ const User = {
             console.log(error);
             return res.status(400).send({
                 status: 'error',
-                error
+                error: 'An error occurred, please try again!'
             })
         }
 

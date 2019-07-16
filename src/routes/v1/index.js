@@ -23,6 +23,9 @@ export default (app) => {
     app.route('/api/v1/bookings', checkToken)
         .post(Booking.create)
         .get(Booking.getAll)
+    
+    app.route('/api/v1/bookings/:bookingId', checkToken)
+        .delet(Booking.delete)
 
 
     
