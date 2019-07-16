@@ -9,7 +9,7 @@ const User = {
      * Create A User
      * @param {object} req 
      * @param {object} res
-     * @returns {object} reflection object 
+     * @returns {object} user object 
      */
     async create(req, res) {
         const { email, first_name, last_name, password, is_admin } = req.body;
@@ -50,7 +50,9 @@ const User = {
                     user_id: rows[0].id,
                     email, 
                     first_name, 
-                    last_name }
+                    last_name,
+                    token
+                }
              });
         } catch(error) {
             console.log(error);
@@ -67,6 +69,64 @@ const User = {
             });
         }
     },
+    /**
+     * Create A User
+     * @param {object} req 
+     * @param {object} res
+     * @returns {object} user object 
+     */
+    async signin(req, res){
+        const { email, password } = req.body;
+
+        if (!email || !password) {
+            return res.status(400).send({
+                status: 'error',
+                error: 'Some values are missing'
+            });
+        }
+        if (!Utility.isValidEmail(email)) {
+            return res.status(400).send({
+                status: 'error',
+                error: 'Please enter a valid email address' 
+            });
+        }
+
+        // check if user exist and set jwt token
+        const text = 'SELECT * FROM Users WHERE email = $1';
+        try {
+            const { rows } = await db.query(text, [email]);
+            if (!rows[0]) {
+                return res.status(400).send({
+                    status: 'error',
+                    error: 'The credentials you provided is incorrect'
+                });
+            }
+            if(!Helper.comparePassword(rows[0].password, password)) {
+                return res.status(400).send({ 
+                    status: 'error',
+                    error: 'The credentials you provided is incorrect' 
+                });
+            }
+            const token = Helper.generateToken(rows[0].id);
+            const { id, is_admin } = row[0];
+            return res.status(200).send({ 
+                status: 'success',
+                data: {
+                    user_id: id,
+                    is_admin,
+                    token
+                }               
+            });
+        } catch(error) {
+            console.log(error);
+            return res.status(400).send({
+                status: 'error',
+                error
+            })
+        }
+
+
+    }
 
 
 }

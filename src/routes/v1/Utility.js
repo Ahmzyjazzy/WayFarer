@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 
@@ -32,13 +33,27 @@ const Utility = {
      * @param {string} id
      * @returns {string} token
      */
-    generateToken(id) {
-        const token = jwt.sign({
-        userId: id
-    },
-        process.env.SECRET, { expiresIn: '7d' }
-    );
+    async generateToken(id) {
+        const token = await jwt.sign({ userId: id }, process.env.SECRET,{ expiresIn: '7d' });
         return token;
+    },  
+    /**
+     * Gnerate Token
+     * @param {string} token
+     * @returns {Boolean} 
+     */
+    verifyToken(token) {
+        jwt.verify(token, process.env.SECRET, (err, authorizedData) => {
+            if(err){
+                //If error send Forbidden (403)
+                console.log('ERROR: Could not connect to the protected route');
+                res.sendStatus(403);
+            } else {
+                //If token is successfully verified, we can send the autorized data 
+                return authorizedData;
+                console.log('SUCCESS: Connected to protected route');
+            }
+        })
     }
 }
 
