@@ -107,7 +107,7 @@ const Trip = {
         }
 
         // check if user exist and set jwt token
-        const text = 'SELECT * FROM Trip';
+        const text = `SELECT * FROM Trip WHERE status = 'Active' `;
         try {
             const { rows } = await db.query(text);
             return res.status(200).send({ 
@@ -121,7 +121,55 @@ const Trip = {
                 error: 'An error occurred, please try again!'
             })
         }
+    },
+    /**
+     * Create A User
+     * @param {object} req 
+     * @param {object} res
+     * @returns {object} message object 
+     */
+    async cancel(req, res) {
+        const { tripId } = req.params; //get it from params
+
+        // check to see if request contain token
+        if (!req.token) {
+            return res.status(403).send({
+                status: 'error',
+                error: 'Authentication failed'
+            })
+        }
+
+        //verify token
+        if(!Utility.verifyToken(req.token)){
+            return res.status(403).send({
+                status: 'error',
+                error: 'Authentication failed'
+            })
+        }
+
+        const cancelQuery = `UPDATE Trip SET status = 'Cancel' WHERE id=$1 returning *`;
+        try {
+            const { rows } = await db.query(cancelQuery, [tripId]);
+            if(!rows[0]) {
+                return res.status(404).send({
+                    status: 'error',
+                    error: 'trip not found'
+                });
+            }
+            return res.status(204).send({
+                status: 'success',
+                data: {
+                    message: 'Trip cancelled successfully'
+                }
+            });
+        } catch(error) {
+            return res.status(400).send({
+                status: 'error'
+                error: 'An error occurred, please try again!'
+            });
+        }
     }
+
 
 
 }

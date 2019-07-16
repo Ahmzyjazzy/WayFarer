@@ -19,6 +19,9 @@ export default (app) => {
         .post(Trip.create)
         .get(Trip.getAll)
 
+    app.route('/api/v1/trips/:tripId', checkToken)
+        .patch(Trip.cancel)
+
     // Booking route
     app.route('/api/v1/bookings', checkToken)
         .post(Booking.create)
