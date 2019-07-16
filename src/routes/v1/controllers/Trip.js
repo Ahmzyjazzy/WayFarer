@@ -65,6 +65,12 @@ const Trip = {
             });
         }
     },
+    /**
+     * Create all Trips
+     * @param {object} req 
+     * @param {object} res
+     * @returns {object} trip array 
+     */
     async getAll(req,res){
         // check to see if request contain token
         if (!req.token) {

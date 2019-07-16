@@ -6,13 +6,13 @@ import db from '../db';
 
 const Trip = {
     /**
-     * Create A Trip
+     * Create A Booking
      * @param {object} req 
      * @param {object} res
-     * @returns {object} trip object 
+     * @returns {object} booking object 
      */
     async create(req, res) {
-        const { token, bus_id, origin, destination, trip_date, fare } = req.body;
+        const { user_id, trip_id, is_admin } = req.body;
         
         // check to see if request contain token
         if (!req.token) {
@@ -30,17 +30,11 @@ const Trip = {
             })
         }
 
-        const hashPassword = Utility.hashPassword(password);
-
-        const createQuery = `INSERT INTO
-        Trip (bus_id, origin, destination, trip_date, fare, created_on)
+        const createQuery = `INSERT INTO Booking (trip_id, user_id, created_on)
         VALUES ($1, $2, $3, $4, $5, $6);`;
         const values = [
-            email,
-            first_name,
-            last_name,
-            hashPassword,
-            is_admin,
+            trip_id,
+            user_id,
             moment(new Date())
         ];
 
@@ -67,6 +61,12 @@ const Trip = {
             });
         }
     },
+    /**
+     * Get all Booking
+     * @param {object} req 
+     * @param {object} res
+     * @returns {Array} booking array 
+     */
     async getAll(req,res){
         // check to see if request contain token
         if (!req.token) {
@@ -85,7 +85,7 @@ const Trip = {
         }
 
         // check if user exist and set jwt token
-        const text = 'SELECT * FROM Trip';
+        const text = 'SELECT * FROM Booking';
         try {
             const { rows } = await db.query(text);
             if (!rows.length) {

@@ -70,7 +70,7 @@ const User = {
         }
     },
     /**
-     * Create A User
+     * Get a user
      * @param {object} req 
      * @param {object} res
      * @returns {object} user object 
