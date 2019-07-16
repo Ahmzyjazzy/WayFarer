@@ -30,17 +30,15 @@ const Trip = {
             })
         }
 
-        const hashPassword = Utility.hashPassword(password);
-
         const createQuery = `INSERT INTO
         Trip (bus_id, origin, destination, trip_date, fare, created_on)
         VALUES ($1, $2, $3, $4, $5, $6);`;
         const values = [
-            email,
-            first_name,
-            last_name,
-            hashPassword,
-            is_admin,
+            bus_id,
+            origin,
+            destination,
+            trip_date,
+            fare,
             moment(new Date())
         ];
 
