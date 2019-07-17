@@ -12,6 +12,8 @@ app.use(
   })
 )
 
+app.use(express.static('public/', { index: 'index.html' }));
+
 //register api routes
 import apiVersion1 from './src/routes/v1';
 apiVersion1(app);
