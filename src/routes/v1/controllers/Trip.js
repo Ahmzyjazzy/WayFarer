@@ -13,7 +13,7 @@ const Trip = {
      */
     async create(req, res) {
         const { bus_id, origin, destination, trip_date, fare } = req.body;
-        
+
         // check to see if request contain token
         if (!req.token) {
             return res.status(403).send({
@@ -33,8 +33,8 @@ const Trip = {
         //check if bus has been assigned to an active trip
         try{
             const text = `SELECT bus_id FROM Trip WHERE bus_id = $1 AND status = 'Active'`;
-            const { rows } = await db.query(text, [bus_id]);
-            if (rows[0]) {
+            const res = await db.query(text, [bus_id]);
+            if (res.rows[0]) {
                 return res.status(400).send({
                     status: 'error',
                     error: 'This Bus has already been assigned to an active trip'
@@ -57,7 +57,7 @@ const Trip = {
             destination,
             trip_date,
             fare,
-            status: 'Active'
+            'Active'
         ];
 
         try {
@@ -106,7 +106,7 @@ const Trip = {
             })
         }
 
-        // check if user exist and set jwt token
+        // check if user exist and 64set jwt token
         const text = `SELECT * FROM Trip WHERE status = 'Active' `;
         try {
             const { rows } = await db.query(text);
@@ -164,7 +164,7 @@ const Trip = {
             });
         } catch(error) {
             return res.status(400).send({
-                status: 'error'
+                status: 'error',
                 error: 'An error occurred, please try again!'
             });
         }

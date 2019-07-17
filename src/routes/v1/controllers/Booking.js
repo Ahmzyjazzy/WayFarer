@@ -33,11 +33,11 @@ const Booking = {
         // first check if there is more seat capacity before accepting booking
         try{
             //get total booking on the current trip
-            let { rows } = await db.query(`SELECT COUNT(*) AS total_booked FROM Booking WHERE trip_id = $1`, [trip_id]); 
-            const { total_booked } = rows[0]; 
+            const res = await db.query(`SELECT COUNT(*) AS total_booked FROM Booking WHERE trip_id = $1`, [trip_id]); 
+            const { total_booked } = res.rows[0]; 
             //get the capacity of bus assigned to trip
-            let { rows } = await db.query(`SELECT capacity FROM Bus B WHERE B.id = (SELECT bus_id FROM Booking T WHERE T.id = $1)`, [trip_id]); 
-            const { capacity } = rows[0]; 
+            const res2 = await db.query(`SELECT capacity FROM Bus B WHERE B.id = (SELECT bus_id FROM Booking T WHERE T.id = $1)`, [trip_id]); 
+            const { capacity } = res2.rows[0]; 
 
             if(capacity == total_booked){
                 //no more seat available
@@ -66,21 +66,21 @@ const Booking = {
         ];
 
         try {
-            let { rows } = await db.query(createQuery, values);     
+            const result = await db.query(createQuery, values);     
                  
-            const { id, trip_id, user_id } = rows[0]; //booking response variables 
+            const { id, trip_id, user_id } = result.rows[0]; //booking response variables 
 
             //fetch user info -- first_name, last_name, email
-            let { rows } = await db.query(`SELECT email, first_name, last_name FROM Users WHERE id = $1`, [user_id]); 
-            const { email, first_name, last_name } = rows[0];
+            const result2 = await db.query(`SELECT email, first_name, last_name FROM Users WHERE id = $1`, [user_id]); 
+            const { email, first_name, last_name } = result2.rows[0];
 
             //trip info -- bus_id, trip_date,
-            let { rows } = await db.query(`SELECT bus_id, trip_date FROM Trip WHERE id = $1`, [trip_id]); 
-            const { bus_id, trip_date } = rows[0]; 
+            const result3 = await db.query(`SELECT bus_id, trip_date FROM Trip WHERE id = $1`, [trip_id]); 
+            const { bus_id, trip_date } = result3.rows[0]; 
 
             //get --seat number-- from count of all bookings
-            let { rows } = await db.query(`SELECT COUNT(*) AS seat_number FROM Booking WHERE trip_id = $1`, [trip_id]); 
-            const { seat_number } = rows[0]; 
+            const result4 = await db.query(`SELECT COUNT(*) AS seat_number FROM Booking WHERE trip_id = $1`, [trip_id]); 
+            const { seat_number } = result4.rows[0]; 
 
             return res.status(201).send({ 
                 status: 'success',
@@ -90,7 +90,7 @@ const Booking = {
                     trip_id,
                     bus_id,
                     trip_date,
-                    seat_number
+                    seat_number,
                     first_name,
                     last_name                    
                 }
@@ -135,10 +135,10 @@ const Booking = {
             (SELECT last_name FROM User U WHERE U.id = $1) last_name,
             FROM Booking BK`;
             try {
-                const { rows } = await db.query(text);        
+                const result = await db.query(text);        
                 return res.status(200).send({ 
                     status: 'success',
-                    data: rows
+                    data: result.rows
                 });
             } catch(error) {
                 console.log(error);
@@ -155,7 +155,7 @@ const Booking = {
             (SELECT last_name FROM User U WHERE U.id = $1) last_name,
             FROM Booking BK WHERE user_id = $1`;
             try {
-                const { rows } = await db.query(text2, [user_id]);
+                const result2 = await db.query(text2, [user_id]);
                 if (!rows.length) {
                     return res.status(200).send({
                         status: 'success',
@@ -164,7 +164,7 @@ const Booking = {
                 }            
                 return res.status(200).send({ 
                     status: 'success',
-                    data: rows
+                    data: result2.rows
                 });
             } catch(error) {
                 console.log(error);
@@ -174,7 +174,7 @@ const Booking = {
                 })
             }
         }
-    }
+    },
     /**
    * Delete a booking
    * @param {object} req 
@@ -217,7 +217,7 @@ const Booking = {
             });
         } catch(error) {
             return res.status(400).send({
-                status: 'error'
+                status: 'error',
                 error: 'An error occurred, please try again!'
             });
         }
