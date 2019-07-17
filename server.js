@@ -4,6 +4,8 @@ import cors from 'cors';
 import bodyParser from 'body-parser';
 
 const app = express();
+const PORT = process.env.PORT || 9000;
+
 app.use(cors());
 app.use(bodyParser.json())
 app.use(
@@ -32,6 +34,6 @@ app.get('*', (req, res) => {
     });
 });
 
-app.listen(process.env.PORT || process.env.PORT, () =>
-  console.log(`app listening on port ${process.env.PORT}!`),
+app.listen(PORT, () =>
+  console.log(`app listening on port ${PORT}!`),
 );
