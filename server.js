@@ -4,7 +4,6 @@ import cors from 'cors';
 import bodyParser from 'body-parser';
 
 const app = express();
-const PORT = process.env.PORT || 9000;
 
 app.use(cors());
 app.use(bodyParser.json())
@@ -34,6 +33,9 @@ app.get('*', (req, res) => {
     });
 });
 
-app.listen(PORT, () =>
-  console.log(`app listening on port ${PORT}!`),
-);
+app.set( 'port', ( process.env.PORT || 9000 ));
+
+// Start node server
+app.listen( app.get( 'port' ), function() {
+  console.log( 'Node server is running on port ' + app.get( 'port' ));
+});
